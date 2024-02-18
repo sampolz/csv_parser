@@ -383,5 +383,14 @@ class Data:
                     templist.append(line[index])
                 toReturn.append(templist)
         else:
-            for header in headers:
-                column = self.header2col[header]
+            rowIndices = rows
+
+            for rowIndex in rowIndices:
+                templist = []
+                row = self.data[rowIndex]
+                for header in headers:
+                    index = self.header2col[header]
+                    templist.append(row[index])
+                toReturn.append(templist)
+        return np.array(toReturn)
+
