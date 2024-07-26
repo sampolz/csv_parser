@@ -378,7 +378,9 @@ class Data:
         if(len(rows) == 0):
             for line in self.data:
                 templist = []
+                # print(headers)
                 for header in headers:
+                    # print(header)
                     index = self.header2col[header]
                     templist.append(line[index])
                 toReturn.append(templist)

@@ -1,12 +1,11 @@
 '''analysis.py
 Run statistical analyses and plot Numpy ndarray data
-YOUR NAME HERE
+Sam Polyakov
 CS 251/2: Data Analysis and Visualization
 Spring 2024
 '''
 import numpy as np
 import matplotlib.pyplot as plt
-
 
 class Analysis:
     def __init__(self, data):
@@ -29,7 +28,7 @@ class Analysis:
         -----------
         data: Data object. Contains all data samples and variables in a dataset.
         '''
-        pass
+        self.data = data
 
     def min(self, headers, rows=[]):
         '''Computes the minimum of each variable in `headers` in the data object.
@@ -50,7 +49,9 @@ class Analysis:
 
         NOTE: There should be no loops in this method!
         '''
-        pass
+        selectData = self.data.select_data(headers,rows)
+        mins = np.min(selectData, axis = 0)
+        return mins
 
     def max(self, headers, rows=[]):
         '''Computes the maximum of each variable in `headers` in the data object.
@@ -70,7 +71,9 @@ class Analysis:
 
         NOTE: There should be no loops in this method!
         '''
-        pass
+        selectData = self.data.select_data(headers,rows)
+        maxs = np.max(selectData, axis = 0)
+        return maxs
 
     def range(self, headers, rows=[]):
         '''Computes the range [min, max] for each variable in `headers` in the data object.
@@ -92,7 +95,9 @@ class Analysis:
 
         NOTE: There should be no loops in this method!
         '''
-        pass
+        mins = self.min(headers,rows)
+        maxs = self.max(headers,rows)
+        return mins,maxs
 
     def mean(self, headers, rows=[]):
         '''Computes the mean for each variable in `headers` in the data object.
@@ -113,7 +118,14 @@ class Analysis:
         NOTE: You CANNOT use np.mean here!
         NOTE: There should be no loops in this method!
         '''
-        pass
+        selectData = self.data.select_data(headers,rows)
+
+        sums = np.sum(selectData,axis=0)
+
+        num_elements = selectData.shape[0]
+
+        return sums / num_elements
+
 
     def var(self, headers, rows=[]):
         '''Computes the variance for each variable in `headers` in the data object.
@@ -135,7 +147,16 @@ class Analysis:
         - You CANNOT use np.var or np.mean here!
         - There should be no loops in this method!
         '''
-        pass
+        selectData = self.data.select_data(headers,rows)
+        sums = np.sum(selectData,axis=0)
+        means = self.mean(headers, rows)
+
+        totals = (selectData - means) ** 2
+
+        denominator = len(rows) -1 if len(rows) > 0 else self.data.get_num_samples() -1 
+
+        return totals.sum(0) / denominator
+
 
     def std(self, headers, rows=[]):
         '''Computes the standard deviation for each variable in `headers` in the data object.
@@ -157,7 +178,10 @@ class Analysis:
         - You CANNOT use np.var, np.std, or np.mean here!
         - There should be no loops in this method!
         '''
-        pass
+        selectData = self.data.select_data(headers,rows)
+        var = self.var(headers, rows)
+
+        return np.sqrt(var)
 
     def show(self):
         '''Simple wrapper function for matplotlib's show function.
@@ -188,7 +212,22 @@ class Analysis:
 
         NOTE: Do not call plt.show() here.
         '''
-        pass
+        x = [ind_var]
+        y = [dep_var]
+
+        # print(x)
+        # print(y)
+        xData = self.data.select_data(x)
+        yData = self.data.select_data(y)
+
+        plt.scatter(xData,yData)
+        plt.xlabel(x)
+        plt.ylabel(y)
+        plt.title(title)
+
+        return xData, yData
+
+
 
     def pair_plot(self, data_vars, fig_sz=(12, 12), title=''):
         '''Create a pair plot: grid of scatter plots showing all combinations of variables in `data_vars` in the
@@ -224,4 +263,22 @@ class Analysis:
         NOTE: For loops are allowed here!
         '''
 
-        pass
+        fig, axes = plt.subplots(nrows=len(data_vars), ncols=len(data_vars), sharex='col', sharey='row', figsize = fig_sz)
+        fig.suptitle(title)
+
+        for i in range(len(data_vars)):
+            for(j) in range(len(data_vars)):
+                x = [data_vars[j]]
+                y = [data_vars[i]]
+                xData = self.data.select_data(x)
+                yData = self.data.select_data(y)
+
+                axes[i,j].scatter(xData,yData)
+
+                if(j == 0):
+                    axes[i,j].set_ylabel(data_vars[i])
+                if(i == len(data_vars) - 1):
+                    axes[i,j].set_xlabel(data_vars[j])
+
+        
+        return fig, axes 
